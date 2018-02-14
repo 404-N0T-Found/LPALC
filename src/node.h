@@ -6,8 +6,12 @@
 #include <string>
 #include <string.h>
 #include <algorithm>
+#include <QFile>
+#include <iomanip>
+#include <QTime>
+#include <fstream>
 
-
+#include "network.h"
 
 using namespace std;
 
@@ -21,6 +25,7 @@ private:
 public:
     Node(int label = 0);
 
+    friend class Network; // access private members
 };
 
 
