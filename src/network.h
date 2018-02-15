@@ -32,6 +32,9 @@ private:
     int numberOfNodes;
     vector<Node> *nodes;
 
+    int numberOfFoundClusters;
+    int numberOfRealClusters;
+
     SparseMatrix<int> *edges;
 
     int numberOfRealNetwork; // cA
@@ -40,7 +43,7 @@ private:
 public:
     Network();
 
-    bool init(string inputPath);
+    bool init(string inputPath, int numberOfRealClusters);
 
     bool mainFunc();
 };

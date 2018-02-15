@@ -4,7 +4,7 @@ Network::Network() : numberOfNodes(0)
 {
 }
 
-bool Network::init(string inputPath)
+bool Network::init(string inputPath, int numberOfRealClusters)
 {
     try
     {
@@ -12,7 +12,7 @@ bool Network::init(string inputPath)
 
         if (!inputFile.open(QFile::ReadOnly)) // try to open the file
             return false;
-
+        this->numberOfRealClusters = numberOfRealClusters;
 
 
 
