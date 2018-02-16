@@ -12,6 +12,7 @@ bool Network::init(string inputPath, int numberOfRealClusters)
 
         if (!inputFile.open(QFile::ReadOnly)) // try to open the file
             return false;
+
         this->numberOfRealClusters = numberOfRealClusters;
 
 
@@ -88,6 +89,7 @@ bool Network::init(string inputPath, int numberOfRealClusters)
         cerr << ex.what() << endl;
         return false;
     }
+
 }
 
 bool Network::mainFunc()
@@ -100,36 +102,40 @@ bool Network::mainFunc()
         std::shuffle(nodes->begin() + 1, nodes->end(), default_random_engine(seed));
 
 
-        for (int i = 1; i <= numberOfNodes; ++i)
+        for (auto i = nodes->begin() + 1; i != nodes->end(); ++i)
         {
-            vector<int> neighbors = edges->getNeighbors(i);
+            vector<int> *tmpNeighbors;
+            *tmpNeighbors = edges->getNeighbors(i->degree);
 
+
+            vector<Node> neighbors(tmpNeighbors->size() + 1);
 
 
             /* the calculations are based on the labels or as we call it 'newLabel'
              * not the node number itself which is just a distinction of nodes
              */
-            for (int i = 0; i < neighbors.size(); i++)
+            for (int i = 1; i <= tmpNeighbors->size(); i++)
             {
-                int tmp = neighbors.at(i);
-                neighbors.at(i) = nodes->at(tmp).newLabel;
+                int tmp = tmpNeighbors->at(i - 1);
+                neighbors.at(i).label = tmp;
+                neighbors.at(i).degree = nodes->at(i).degree;
+                neighbors.at(i).newLabel = nodes->at(i).newLabel;
             }
 
 
 
-            map<int, int> neighborFreq;
-            foreach (int j, neighbors)
+            map<Node, int> neighborFreq;
+            foreach (auto j, neighbors)
                 if (neighborFreq.count(j) == 0)
-                    neighborFreq.insert(make_pair(j, count(neighbors.begin(),
-                                                           neighbors.end(),
-                                                           j)));
+                    neighborFreq.insert(make_pair(j, std::count(neighbors.begin(),
+                                                                neighbors.end(),
+                                                                j)));
 
 
-            map<int, int>::iterator iter = neighborFreq.begin();
+            map<Node, int>::iterator iter = neighborFreq.begin();
 
             int numberOfMax = 1;
-            int maxIndex = iter->first,
-                    maxFreq = iter->second;
+            int maxFreq = iter->second;
             iter++;
 
             for (; iter != neighborFreq.end(); iter++)
@@ -137,7 +143,6 @@ bool Network::mainFunc()
                 if (iter->second > maxFreq)
                 {
                     numberOfMax = 1;
-                    maxIndex = iter->first;
                     maxFreq = iter->second;
                 }
                 else if (iter->second == maxFreq)
@@ -150,11 +155,23 @@ bool Network::mainFunc()
              */
             if (numberOfMax > 1)
             {
+                vector<int> shortestCycle;
+                computeShortestCycle(i->degree, neighbors, shortestCycle);
 
+                if (shortestCycle.size() != 0)
+                {
+                    // CHANGE
+
+                }
+                else
+                {
+                    // CHANGE
+
+                }
             }
             else // only one type of labels are in the node's neighbors list
             {
-
+                // CHANGE
             }
 
         }
@@ -164,5 +181,58 @@ bool Network::mainFunc()
 
 int Network::NMI()
 {
-    return 10;
+    // CHANGE
+}
+
+
+
+
+
+//====================== reference: geeksforgeeks.org ========================
+void Network::computeShortestCycle(const int startingPoint,
+                                   const vector<Node> &neighbors,
+                                   vector<int> &shortestCycle)
+{
+    int E = edges->numberOfRowElement(startingPoint);
+    auto minCycle = INT64_MAX;
+    for (int i = 0 ; i < E  ; i++)
+    {
+        /* get current edge vertices which we currently
+         * remove from graph and then find shortest path
+         * between these two vertex using Dijkstra’s
+         * shortest path algorithm.
+         */
+
+        edges->removeEdge(startingPoint, neighbors.at(i).label);
+
+        // minimum distance between these two vertices
+        int distance;
+        vector<int> tmpShrotestCycle;
+        if ((distance = shortestPath(startingPoint, neighbors.at(i).label,
+                                     tmpShrotestCycle)) < minCycle)
+        {
+            minCycle = distance;
+            shortestCycle = tmpShrotestCycle;
+        }
+
+        // to make a cycle we have to add weight of
+        // currently removed edge if this is the shortest
+        // cycle then update minCycle
+
+        //  add current edge back to the graph
+        edges->set(startingPoint, neighbors.at(i).label, 1);
+    }
+}
+int Network::shortestPath(int u, int v, vector<int> &tmpShortestCycle)
+{
+
+}
+
+bool operator <(const Node& node1, const Node& node2)
+{
+    return node1.degree < node2.degree;
+}
+bool operator ==(Node& node1, const Node& node2)
+{
+    return node1.degree == node2.degree;
 }
