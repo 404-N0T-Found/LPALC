@@ -4,7 +4,7 @@ Network::Network() : numberOfNodes(0)
 {
 }
 
-bool Network::init(string inputPath, int numberOfRealClusters)
+bool Network::init(const string inputPath, const int numberOfRealClusters)
 {
     try
     {
@@ -223,7 +223,7 @@ void Network::computeShortestCycle(const int startingPoint,
         edges->set(startingPoint, neighbors.at(i).label, 1);
     }
 }
-int Network::shortestPath(int u, int v, vector<int> &tmpShortestCycle)
+int Network::shortestPath(const int u, const int v, vector<int> &tmpShortestCycle)
 {
 
 }

@@ -48,11 +48,11 @@ private:
                               const vector<Node> &neighbors,
                               vector<int> &shortestCycle);
 
-    int  shortestPath(int u, int v, vector<int> &tmpShortestCycle);
+    int shortestPath(const int u, const int v, vector<int> &tmpShortestCycle);
 public:
     Network();
 
-    bool init(string inputPath, int numberOfRealClusters);
+    bool init(const string inputPath, const int numberOfRealClusters);
 
     bool mainFunc();
 };
