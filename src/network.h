@@ -12,8 +12,8 @@
 #include <random>
 #include <chrono>
 #include <vector>
-#include <algorithm>
 #include <map>
+
 // reference: https://github.com/meysam81/Sparse-Matrix
 #include "../Sparse-Matrix/src/SparseMatrix/SparseMatrix.cpp"
 
@@ -26,6 +26,7 @@ typedef struct Node
     int degree;
 } Node;
 
+
 class Network
 {
 private:
@@ -37,9 +38,17 @@ private:
 
     SparseMatrix<int> *edges;
 
+    // ADD CLUSTERS
+
     int numberOfRealNetwork; // cA
 
     int NMI();
+
+    void computeShortestCycle(const int startingPoint,
+                              const vector<Node> &neighbors,
+                              vector<int> &shortestCycle);
+
+    int  shortestPath(int u, int v, vector<int> &tmpShortestCycle);
 public:
     Network();
 
