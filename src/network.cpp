@@ -4,7 +4,7 @@ Network::Network() : numberOfNodes(0)
 {
 }
 
-bool Network::init(const string inputPath, const int numberOfRealClusters)
+bool Network::init(const string inputPath)
 {
     try
     {
@@ -12,10 +12,6 @@ bool Network::init(const string inputPath, const int numberOfRealClusters)
 
         if (!inputFile.open(QFile::ReadOnly)) // try to open the file
             return false;
-
-        this->numberOfRealClusters = numberOfRealClusters;
-
-
 
         // first loop to get the number of nodes
         while (!inputFile.atEnd()) // read until EOF
@@ -95,10 +91,13 @@ bool Network::init(const string inputPath, const int numberOfRealClusters)
 bool Network::mainFunc()
 {
     int t = 1;
-    while (NMI() >= exp(1)
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+    srand(seed);
+    int e = ((double) rand() / RAND_MAX);
+    while (NMI() >= e
            && (t <= numberOfNodes))
     {
-        unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+        seed = chrono::system_clock::now().time_since_epoch().count();
         std::shuffle(nodes->begin() + 1, nodes->end(), default_random_engine(seed));
 
 
@@ -191,19 +190,17 @@ bool Network::mainFunc()
 
         }
         t++;
+
+
     }
 }
 
 int Network::NMI()
 {
-    // CHANGE
+    return 1;
 }
 
-
-
-
-
-//====================== reference: geeksforgeeks.org ========================
+//================= reference: geeksforgeeks.org (refined) ===================
 void Network::computeShortestCycle(const int startingPoint,
                                    const vector<Node> &neighbors,
                                    vector<int> &shortestCycle)
