@@ -1,6 +1,7 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
+#include <set>
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -48,7 +49,9 @@ private:
                               const vector<Node> &neighbors,
                               vector<int> &shortestCycle);
 
-    int shortestPath(const int u, const int v, vector<int> &tmpShortestCycle);
+    int shortestPath(const int u, const int v,
+                     vector<int> &tmpShortestCycle,
+                     const vector<Node> &neighbors);
 public:
     Network();
 

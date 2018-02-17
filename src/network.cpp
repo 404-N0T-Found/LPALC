@@ -158,7 +158,7 @@ bool Network::mainFunc()
                 vector<int> shortestCycle;
                 computeShortestCycle(i->degree, neighbors, shortestCycle);
 
-                if (shortestCycle.size() != 0)
+                if (shortestCycle.size() > 1)
                 {
                     // CHANGE
 
@@ -194,7 +194,7 @@ void Network::computeShortestCycle(const int startingPoint,
                                    vector<int> &shortestCycle)
 {
     int E = edges->numberOfRowElement(startingPoint);
-    auto minCycle = INT64_MAX;
+    auto minCycle = INT32_MAX;
     for (int i = 0 ; i < E  ; i++)
     {
         /* get current edge vertices which we currently
@@ -209,7 +209,8 @@ void Network::computeShortestCycle(const int startingPoint,
         int distance;
         vector<int> tmpShrotestCycle;
         if ((distance = shortestPath(startingPoint, neighbors.at(i).label,
-                                     tmpShrotestCycle)) < minCycle)
+                                     tmpShrotestCycle,
+                                     neighbors)) < minCycle)
         {
             minCycle = distance;
             shortestCycle = tmpShrotestCycle;
@@ -223,9 +224,80 @@ void Network::computeShortestCycle(const int startingPoint,
         edges->set(startingPoint, neighbors.at(i).label, 1);
     }
 }
-int Network::shortestPath(const int u, const int v, vector<int> &tmpShortestCycle)
+int Network::shortestPath(const int u, const int v,
+                          vector<int> &tmpShortestCycle,
+                          const vector<Node> &neighbors)
 {
+    /* find shortest path from source to destination using Dijkstra’s
+     * shortest path algorithm [Time complexity O(E.logV)]
+     */
 
+
+    // Create a set to store vertices that are being processed
+    set< pair<int, int> > nextEdge;
+
+    // Create a vector for distances and initialize all
+    // distances as infinite
+    vector<int> dist(neighbors.size(), INT16_MAX);
+
+    // Insert source itself in Set and initialize its distance as 0
+    nextEdge.insert(make_pair(0, u));
+    dist[u] = 0;
+
+    /* Looping till all uhortest vistance are finalized
+     * then setds will become empty
+     */
+
+
+    // the cycle starts from the source node
+    tmpShortestCycle.push_back(u);
+
+
+    while (!nextEdge.empty())
+    {
+        /* The first vertex in Set is the minimum distance
+         * vertex, extract it from set
+         */
+        pair<int, int> tmp = *(nextEdge.begin());
+        nextEdge.erase(nextEdge.begin());
+
+        /* vertex label is stored in second of pair (it has to be done this
+         * way to keep the vertices sorted distance (distance must be first
+         * item in pair)
+         */
+        int u = tmp.second;
+
+        // 'i' is used to get all adjacent vertices of vertex 'u'
+        for (auto i = neighbors.begin() + 1; i != neighbors.end(); ++i)
+        {
+            // Get vertex label and weight of current adjacent of 'u'
+            int v = (*i).label;
+            int weight = edges->get(u, v);
+
+            // If there is a shorter path to v through u
+            if (dist[v] > dist[u] + weight)
+            {
+                /* If distance of v is not INT16_MAX then it must be in
+                 * our set, so removing it and inserting again with
+                 * updated less distance.
+                 * Note : We extract only those vertices from Set
+                 * for which distance is finalized. So for them,
+                 * we would never reach here
+                 */
+                if (dist[v] != INT16_MAX)
+                    nextEdge.erase(nextEdge.find(make_pair(dist[v], v)));
+
+                tmpShortestCycle.push_back(v);
+
+                // Updating distance of v
+                dist[v] = dist[u] + weight;
+                nextEdge.insert(make_pair(dist[v], v));
+            }
+        }
+    }
+
+    // return shortest path from current Source to destination
+    return dist[v] ;
 }
 
 bool operator <(const Node& node1, const Node& node2)
