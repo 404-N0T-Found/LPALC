@@ -118,8 +118,12 @@ bool Network::mainFunc()
             {
                 int tmp = tmpNeighbors->at(i - 1);
                 neighbors.at(i).label = tmp;
-                neighbors.at(i).degree = nodes->at(i).degree;
-                neighbors.at(i).newLabel = nodes->at(i).newLabel;
+
+                neighbors.at(i).degree =
+                        nodes->at(tmpNeighbors->at(i - 1)).degree;
+
+                neighbors.at(i).newLabel =
+                        nodes->at(tmpNeighbors->at(i - 1)).newLabel;
             }
 
 
@@ -138,15 +142,23 @@ bool Network::mainFunc()
             int maxFreq = iter->second;
             iter++;
 
+            vector<int> maxFreqLabels;
+            maxFreqLabels.push_back(iter->first.label);
+
             for (; iter != neighborFreq.end(); iter++)
             {
                 if (iter->second > maxFreq)
                 {
                     numberOfMax = 1;
                     maxFreq = iter->second;
+                    maxFreqLabels.clear();
+                    maxFreqLabels.push_back(iter->first.label);
                 }
                 else if (iter->second == maxFreq)
+                {
                     numberOfMax++;
+                    maxFreqLabels.push_back(iter->first.label);
+                }
             }
 
             /* difference between LPA and LPACL happens here cause it looks
@@ -160,18 +172,21 @@ bool Network::mainFunc()
 
                 if (shortestCycle.size() > 1)
                 {
-                    // CHANGE
+                    i->newLabel = shortestCycle.at(1);
 
                 }
                 else
                 {
-                    // CHANGE
+                    // choosing a random label having the maximum frequency
+                    i->newLabel = nodes->at(
+                            maxFreqLabels.
+                            at(rand() % maxFreqLabels.size() + 1)).label;
 
                 }
             }
             else // only one type of labels are in the node's neighbors list
             {
-                // CHANGE
+                i->newLabel = maxFreqLabels.at(0);
             }
 
         }
